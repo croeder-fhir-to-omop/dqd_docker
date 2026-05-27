@@ -1,0 +1,35 @@
+services:
+  matchbox:
+    image: croeder/matchbox:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - matchbox-db:/database
+      - ../matchbox_docker/config:/config:ro
+      - ../matchbox_docker/igs:/igs:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      start_period: 60s
+      retries: 6
+
+  dqd:
+    build:
+      context: ..
+      dockerfile: dqd_docker/Dockerfile
+    ports:
+      - "3838:3838"
+    volumes:
+      - omop-db:/omop
+    environment:
+      - MATCHBOX_URL=http://matchbox:8080
+      - OMOP_DB_PATH=/omop/omop.ddb
+    depends_on:
+      matchbox:
+        condition: service_healthy
+
+volumes:
+  matchbox-db:
+  omop-db:
