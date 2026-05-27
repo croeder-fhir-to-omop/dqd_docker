@@ -16,10 +16,10 @@ COPY matchbox_scripts/*.json /etl/
 COPY matchbox_scripts/ddl/ /etl/ddl/
 
 # Copy DQD runner and Shiny launcher
-COPY run_dqd.R /app/run_dqd.R
-COPY serve_dqd.R /app/serve_dqd.R
+COPY dqd_docker/run_dqd.R /app/run_dqd.R
+COPY dqd_docker/serve_dqd.R /app/serve_dqd.R
 
-COPY entrypoint.sh /entrypoint.sh
+COPY dqd_docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENV MATCHBOX_URL=http://matchbox:8080
