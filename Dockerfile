@@ -5,7 +5,7 @@ RUN apt-get update \
  && apt-get install -y python3 python3-pip libcurl4-openssl-dev libssl-dev libxml2-dev \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir requests duckdb
+RUN pip3 install --no-cache-dir --break-system-packages requests duckdb
 
 # R packages
 RUN Rscript -e "install.packages(c('shiny', 'DBI', 'duckdb', 'DatabaseConnector', 'DataQualityDashboard'), repos='https://cloud.r-project.org')"
