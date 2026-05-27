@@ -6,7 +6,7 @@ cd /etl
 python3 load_duckdb.py
 
 echo "=== Running Data Quality Dashboard checks ==="
-Rscript /srv/shiny-server/run_dqd.R
+Rscript /app/run_dqd.R
 
-echo "=== Starting Shiny server ==="
-exec /usr/bin/shiny-server
+echo "=== Serving DQD dashboard on port 3838 ==="
+exec Rscript /app/serve_dqd.R
