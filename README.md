@@ -2,6 +2,16 @@
 
 Automated FHIR→OMOP ETL pipeline followed by the [OHDSI Data Quality Dashboard](https://github.com/OHDSI/DataQualityDashboard). On startup it transforms all sample FHIR fixtures into an OMOP CDM 5.4 DuckDB database, runs DQD checks, and serves two dashboards.
 
+Part of the [croeder-fhir-to-omop](https://github.com/croeder-fhir-to-omop) FHIR→OMOP pipeline:
+
+| Repo | Role |
+|---|---|
+| [matchbox](https://github.com/croeder-fhir-to-omop/matchbox) | FHIR server with OMOP IG (fork of ahdis/matchbox) |
+| [matchbox_docker](https://github.com/croeder-fhir-to-omop/matchbox_docker) | Docker config and IGs for matchbox |
+| [matchbox_scripts](https://github.com/croeder-fhir-to-omop/matchbox_scripts) | Transform functions, ETL script, and FHIR fixtures |
+| [jupyter_docker](https://github.com/croeder-fhir-to-omop/jupyter_docker) | Interactive Jupyter notebook environment |
+| **[dqd_docker](https://github.com/croeder-fhir-to-omop/dqd_docker)** | **Automated ETL + OHDSI Data Quality Dashboard ← you are here** |
+
 ## Contents
 
 | Path | Description |
