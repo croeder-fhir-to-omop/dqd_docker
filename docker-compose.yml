@@ -6,7 +6,6 @@ services:
     volumes:
       - matchbox-db:/database
       - ../matchbox_docker/config:/config:ro
-      - ../matchbox_docker/igs:/igs:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]

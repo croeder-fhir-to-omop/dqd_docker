@@ -1,17 +1,21 @@
 FROM rocker/r-ver:latest
 
-# Python for the ETL
+# Python for the ETL + Java for rJava/DatabaseConnector
 RUN apt-get update \
- && apt-get install -y python3 python3-pip libcurl4-openssl-dev libssl-dev libxml2-dev \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install -y python3 python3-pip libcurl4-openssl-dev libssl-dev libxml2-dev default-jdk \
+ && rm -rf /var/lib/apt/lists/* \
+ && R CMD javareconf
 
 RUN pip3 install --no-cache-dir --break-system-packages requests duckdb
 
-# R packages
-RUN Rscript -e "install.packages(c('shiny', 'DBI', 'duckdb', 'DatabaseConnector', 'DataQualityDashboard'), repos='https://cloud.r-project.org')"
+# R packages — use PPM for pre-built Linux binaries, fall back to CRAN for missing
+RUN Rscript -e " \
+  options(repos = c(PPM = 'https://packagemanager.posit.co/cran/__linux__/noble/latest', CRAN = 'https://cloud.r-project.org')); \
+  install.packages(c('shiny', 'DBI', 'duckdb', 'DatabaseConnector', 'remotes'))"
+RUN Rscript -e "remotes::install_github('OHDSI/DataQualityDashboard')"
 
 # Copy ETL scripts and DDL
-COPY matchbox_scripts/transforms.py matchbox_scripts/load_duckdb.py /etl/
+COPY matchbox_scripts/transforms.py matchbox_scripts/load_duckdb.py matchbox_scripts/omop_to_csv.py /etl/
 COPY matchbox_scripts/*.json /etl/
 COPY matchbox_scripts/ddl/ /etl/ddl/
 
