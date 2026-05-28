@@ -20,6 +20,7 @@ services:
       dockerfile: dqd_docker/Dockerfile
     ports:
       - "3838:3838"
+      - "8088:8088"
     volumes:
       - omop-db:/omop
     environment:

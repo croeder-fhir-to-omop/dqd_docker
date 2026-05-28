@@ -8,5 +8,8 @@ python3 load_duckdb.py
 echo "=== Running Data Quality Dashboard checks ==="
 Rscript /app/run_dqd.R
 
+echo "=== Serving ETL report on port 8088 ==="
+python3 -m http.server 8088 --directory /omop &
+
 echo "=== Serving DQD dashboard on port 3838 ==="
 exec Rscript /app/serve_dqd.R
