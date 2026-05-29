@@ -1,0 +1,7 @@
+# Overlay for local matchbox_scripts development.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+services:
+  dqd:
+    build:
+      context: ..
+      dockerfile: dqd_docker/Dockerfile

@@ -16,15 +16,17 @@ Part of the [croeder-fhir-to-omop](https://github.com/croeder-fhir-to-omop) FHIR
 
 | Path | Description |
 |---|---|
-| `Dockerfile` | Installs Python, R, DuckDB, and `DataQualityDashboard`; copies ETL scripts and fixtures from `matchbox_scripts` |
-| `docker-compose.yml` | Starts matchbox + the ETL/DQD container |
+| `Dockerfile` | Installs Python, R, DuckDB, and `DataQualityDashboard`; bakes in ETL scripts and fixtures from `matchbox_scripts` |
+| `docker-compose.yml` | Starts matchbox + the ETL/DQD container using published images — no repo clones required |
+| `docker-compose.dev.yml` | Overlay for `matchbox_scripts` development: rebuilds locally from source |
+| `docker-compose.build.yml` | Builds and tags the image for publishing |
 | `entrypoint.sh` | Runs ETL → DQD checks → starts both HTTP servers |
 | `run_dqd.R` | Executes DQD checks against the DuckDB OMOP database; dynamically skips empty tables |
 | `serve_dqd.R` | Serves the DQD Shiny dashboard on port 3838 |
 
 ## Running
 
-Requires `matchbox_docker` and `matchbox_scripts` cloned into the same parent directory.
+No repo clones required. Pull and start with:
 
 ```bash
 docker compose up
@@ -35,7 +37,17 @@ docker compose up
 | http://localhost:3838 | OHDSI Data Quality Dashboard |
 | http://localhost:8088/etl_report.html | ETL report — per-fixture status, StructureMap used, root cause of any failures |
 
-On first run matchbox downloads the OMOP IG (~1 min). Subsequent runs use the cached volume.
+On first run matchbox loads the OMOP IG (~1 min). Subsequent runs use the cached volume.
+
+## Developing matchbox_scripts locally
+
+Clone `matchbox_scripts` alongside this repo, then rebuild and run with the dev overlay:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+The `--build` flag rebuilds the `dqd` image so that your local `matchbox_scripts` changes are baked in. When you're happy with changes, commit and push from the `matchbox_scripts` repo and rebuild the published image.
 
 ## Stopping
 
@@ -44,12 +56,13 @@ docker compose down      # keep data volumes
 docker compose down -v   # also remove volumes (fresh start)
 ```
 
-## Adding fixtures
+## Building and publishing the image
 
-Fixtures are baked into the image at build time. To add one, drop it in `matchbox_scripts/` and rebuild:
+Requires `matchbox_scripts` cloned alongside this repo (the build context is the parent directory).
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.build.yml build
+docker compose -f docker-compose.build.yml push
 ```
 
 See the [organisation README](https://github.com/croeder-fhir-to-omop) for full usage and fixture/engine extension guidance.
