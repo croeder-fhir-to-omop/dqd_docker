@@ -6,4 +6,7 @@ services:
     build:
       context: ..
       dockerfile: dqd_docker/Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
     image: croeder/dqd:latest
