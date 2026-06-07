@@ -19,6 +19,7 @@ Part of the [croeder-fhir-to-omop](https://github.com/croeder-fhir-to-omop) FHIR
 | `Dockerfile` | Installs Python, R, DuckDB, and `DataQualityDashboard`; bakes in ETL scripts and fixtures from `matchbox_scripts` |
 | `docker-compose.yml` | Starts matchbox + the ETL/DQD container using published images — no repo clones required |
 | `docker-compose.dev.yml` | Overlay for `matchbox_scripts` development: rebuilds locally from source |
+| `docker-compose.matchbox-dev.yml` | Overlay for local OMOP IG development: mounts `igs/` and `config/` from a sibling `matchbox_docker` clone |
 | `docker-compose.build.yml` | Builds and tags the image for publishing |
 | `entrypoint.sh` | Runs ETL → DQD checks → starts both HTTP servers |
 | `run_dqd.R` | Executes DQD checks against the DuckDB OMOP database; dynamically skips empty tables |
@@ -48,6 +49,16 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
 The `--build` flag rebuilds the `dqd` image so that your local `matchbox_scripts` changes are baked in. When you're happy with changes, commit and push from the `matchbox_scripts` repo and rebuild the published image.
+
+## Developing the OMOP IG locally
+
+Clone `matchbox_docker` alongside this repo, build your local IG version into `matchbox_docker/igs/`, and update `matchbox_docker/config/application.yaml` with the new version (see the [matchbox_docker README](https://github.com/croeder-fhir-to-omop/matchbox_docker) for the full workflow). Then run with the matchbox dev overlay:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.matchbox-dev.yml up
+```
+
+No image rebuild is required — the overlay mounts `../matchbox_docker/igs` and `../matchbox_docker/config` into the matchbox container at runtime.
 
 ## Stopping
 

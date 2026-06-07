@@ -1,0 +1,6 @@
+services:
+  matchbox:
+    volumes:
+      - matchbox-db:/database
+      - ../matchbox_docker/igs:/igs:ro
+      - ../matchbox_docker/config:/config:ro
