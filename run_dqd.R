@@ -37,6 +37,7 @@ DataQualityDashboard::executeDqChecks(
   cdmDatabaseSchema    = "main",
   resultsDatabaseSchema = "main",
   cdmSourceName        = "FHIR-to-OMOP Demo",
+  cdmVersion           = "5.4",
   numThreads           = 1,
   sqlOnly              = FALSE,
   outputFolder         = "/srv/shiny-server",
