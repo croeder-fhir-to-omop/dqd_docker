@@ -14,9 +14,10 @@ RUN Rscript -e " \
   install.packages(c('shiny', 'DBI', 'duckdb', 'DatabaseConnector', 'remotes'))"
 RUN Rscript -e "remotes::install_github('OHDSI/DataQualityDashboard')"
 
-# Copy ETL scripts and DDL
+# Copy ETL scripts, DDL, and fixture directories
 COPY matchbox_scripts/transforms.py matchbox_scripts/load_duckdb.py matchbox_scripts/omop_to_csv.py /etl/
-COPY matchbox_scripts/*.json /etl/
+COPY matchbox_scripts/test_files/ /etl/test_files/
+COPY matchbox_scripts/sample_fixtures/ /etl/sample_fixtures/
 COPY matchbox_scripts/ddl/ /etl/ddl/
 
 # Copy DQD runner and Shiny launcher

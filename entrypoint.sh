@@ -3,14 +3,15 @@ set -e
 
 echo "=== Running FHIR -> OMOP ETL ==="
 cd /etl
-python3 load_duckdb.py
+python3 load_duckdb.py --fixtures-dir test_files sample_fixtures
 
 echo "=== Running Data Quality Dashboard checks ==="
 Rscript /app/run_dqd.R
 
 echo "=== Copying fixtures for ETL report links ==="
 mkdir -p /omop/fixtures
-cp /etl/*.json /omop/fixtures/
+cp /etl/test_files/*.json /omop/fixtures/
+cp /etl/sample_fixtures/*.json /omop/fixtures/
 
 echo "=== Serving ETL report on port 8088 ==="
 python3 -m http.server 8088 --directory /omop &
