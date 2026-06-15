@@ -6,12 +6,12 @@ services:
       - "8081:8081"
     volumes:
       - enchilada-db:/db
-      - /Users/croeder/git/CCDA/tislab-clad/CCDA_OMOP_Private/CONCEPT.csv:/data/CONCEPT.csv:ro
-      - /Users/croeder/claude_play/CCDA_OMOP_Private/CONCEPT_RELATIONSHIP.csv:/data/CONCEPT_RELATIONSHIP.csv:ro
-      - /Users/croeder/git/matchbox_scripts/concept_extra.tsv:/data/concept_extra.tsv:ro
-      - /Users/croeder/git/matchbox_scripts/concept_relationship_extra.tsv:/data/concept_relationship_extra.tsv:ro
-      - /Users/croeder/git/matchbox_scripts/vocabulary_extra.tsv:/data/vocabulary_extra.tsv:ro
-      - /Users/croeder/git/matchbox_scripts/certs:/certs:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/data/CONCEPT.csv:/data/CONCEPT.csv:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/data/CONCEPT_RELATIONSHIP.csv:/data/CONCEPT_RELATIONSHIP.csv:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/concept_extra.tsv:/data/concept_extra.tsv:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/concept_relationship_extra.tsv:/data/concept_relationship_extra.tsv:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/vocabulary_extra.tsv:/data/vocabulary_extra.tsv:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/certs:/certs:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request, ssl; ctx=ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE; urllib.request.urlopen('https://localhost:8081/r4/metadata', context=ctx)"]
@@ -26,8 +26,8 @@ services:
       - "8080:8080"
     volumes:
       - matchbox-db:/database
-      - /Users/croeder/git/matchbox_docker/config/application.yaml:/config/application.yaml:ro
-      - /Users/croeder/git/matchbox_scripts/certs/enchilada.jks:/certs/enchilada.jks:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_docker/config/application.yaml:/config/application.yaml:ro
+      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/certs/enchilada.jks:/certs/enchilada.jks:ro
     environment:
       - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/certs/enchilada.jks -Djavax.net.ssl.trustStorePassword=changeit
     restart: unless-stopped
