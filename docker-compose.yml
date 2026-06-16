@@ -1,17 +1,12 @@
 services:
   enchilada:
-    build:
-      context: ../enchilada
+    image: croeder/enchilada:latest
     ports:
       - "8081:8081"
     volumes:
       - enchilada-db:/db
-      - /Users/croeder/git_projects/fhir-to-omop-docker/data/CONCEPT.csv:/data/CONCEPT.csv:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/data/CONCEPT_RELATIONSHIP.csv:/data/CONCEPT_RELATIONSHIP.csv:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/concept_extra.tsv:/data/concept_extra.tsv:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/concept_relationship_extra.tsv:/data/concept_relationship_extra.tsv:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/vocabulary_extra.tsv:/data/vocabulary_extra.tsv:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/certs:/certs:ro
+      - ${CONCEPT_CSV:-./CONCEPT.csv}:/data/CONCEPT.csv:ro
+      - ${CONCEPT_RELATIONSHIP_CSV:-./CONCEPT_RELATIONSHIP.csv}:/data/CONCEPT_RELATIONSHIP.csv:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request, ssl; ctx=ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE; urllib.request.urlopen('https://localhost:8081/r4/metadata', context=ctx)"]
@@ -27,10 +22,6 @@ services:
       - "8080:8080"
     volumes:
       - matchbox-db:/database
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_docker/config/application-r4.yaml:/config/application.yaml:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/certs/enchilada.jks:/certs/enchilada.jks:ro
-    environment:
-      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/certs/enchilada.jks -Djavax.net.ssl.trustStorePassword=changeit
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -49,10 +40,6 @@ services:
       - "8082:8080"
     volumes:
       - matchbox-r5-db:/database
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_docker/config/application-r5.yaml:/config/application.yaml:ro
-      - /Users/croeder/git_projects/fhir-to-omop-docker/matchbox_scripts/certs/enchilada.jks:/certs/enchilada.jks:ro
-    environment:
-      - JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/certs/enchilada.jks -Djavax.net.ssl.trustStorePassword=changeit
     restart: unless-stopped
     depends_on:
       enchilada:

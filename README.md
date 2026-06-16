@@ -25,18 +25,46 @@ Part of the [croeder-fhir-to-omop](https://github.com/croeder-fhir-to-omop) FHIR
 | `run_dqd.R` | Executes DQD checks against the DuckDB OMOP database; dynamically skips empty tables |
 | `serve_dqd.R` | Serves the DQD Shiny dashboard on port 3838 |
 
-## Running
+## Running (no clone required)
 
-No repo clones required. Pull and start with:
+The only files you need locally are the two large OMOP vocabulary files from [Athena](https://athena.ohdsi.org):
+- `CONCEPT.csv`
+- `CONCEPT_RELATIONSHIP.csv`
+
+Place them in a working directory alongside the compose file, then:
+
+**Linux / macOS / Windows (PowerShell)**
 
 ```bash
-docker compose up
+curl -O https://raw.githubusercontent.com/croeder-fhir-to-omop/dqd_docker/main/docker-compose.yml
 ```
 
-| URL | Description |
-|---|---|
-| http://localhost:3838 | OHDSI Data Quality Dashboard |
-| http://localhost:8088/etl_report.html | ETL report — per-fixture status, StructureMap used, root cause of any failures |
+**FHIR R4 (default)**
+
+```bash
+docker compose --profile r4 up
+```
+
+**FHIR R5**
+
+```bash
+docker compose --profile r5 up
+```
+
+If your vocabulary files are not in the current directory, set environment variables to point to them:
+
+```bash
+CONCEPT_CSV=/path/to/CONCEPT.csv \
+CONCEPT_RELATIONSHIP_CSV=/path/to/CONCEPT_RELATIONSHIP.csv \
+docker compose --profile r4 up
+```
+
+| Profile | URL | Description |
+|---|---|---|
+| r4 | http://localhost:3838 | OHDSI Data Quality Dashboard (R4) |
+| r4 | http://localhost:8088/etl_report.html | ETL report — per-fixture status, StructureMap used, root cause of any failures |
+| r5 | http://localhost:3839 | OHDSI Data Quality Dashboard (R5) |
+| r5 | http://localhost:8089/etl_report.html | ETL report (R5) |
 
 On first run matchbox loads the OMOP IG (~1 min). Subsequent runs use the cached volume.
 
