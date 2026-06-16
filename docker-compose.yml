@@ -62,6 +62,8 @@ services:
     environment:
       - MATCHBOX_URL=http://matchbox:8080
       - OMOP_DB_PATH=/omop/omop.ddb
+      - FHIR_VERSION=r4
+      - DQD_EXTERNAL_PORT=3838
     depends_on:
       matchbox:
         condition: service_healthy
@@ -78,8 +80,8 @@ services:
       - MATCHBOX_URL=http://matchbox-r5:8080
       - MATCHBOX_R5_URL=http://matchbox-r5:8080
       - OMOP_DB_PATH=/omop/omop.ddb
-      - FIXTURES_DIR=sample_fixtures_r5
       - FHIR_VERSION=r5
+      - DQD_EXTERNAL_PORT=3839
     depends_on:
       matchbox-r5:
         condition: service_healthy
