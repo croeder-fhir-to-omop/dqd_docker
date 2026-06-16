@@ -3,7 +3,7 @@ set -e
 
 echo "=== Running FHIR -> OMOP ETL ==="
 cd /etl
-python3 load_duckdb.py --fixtures-dir sample_fixtures
+python3 load_duckdb.py --fixtures-dir ${FIXTURES_DIR:-sample_fixtures} --fhir-version ${FHIR_VERSION:-r4}
 
 echo "=== Running Data Quality Dashboard checks ==="
 Rscript /app/run_dqd.R

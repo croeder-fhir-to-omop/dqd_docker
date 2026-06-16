@@ -78,6 +78,8 @@ services:
       - MATCHBOX_URL=http://matchbox-r5:8080
       - MATCHBOX_R5_URL=http://matchbox-r5:8080
       - OMOP_DB_PATH=/omop/omop.ddb
+      - FIXTURES_DIR=sample_fixtures_r5
+      - FHIR_VERSION=r5
     depends_on:
       matchbox-r5:
         condition: service_healthy
