@@ -88,6 +88,31 @@ docker compose -f docker-compose.yml -f docker-compose.matchbox-dev.yml up
 
 No image rebuild is required — the overlay mounts `../matchbox_docker/igs` and `../matchbox_docker/config` into the matchbox container at runtime.
 
+## Using a different terminology server (e.g. echidna)
+
+By default, matchbox uses **enchilada** — a local OMOP-backed terminology container included in `docker-compose.yml`. You can swap it for any FHIR-compatible terminology server such as [echidna.fhir.org](https://echidna.fhir.org).
+
+**1. Create a config override file** in your working directory, e.g. `application.yaml`:
+
+```yaml
+matchbox:
+  fhir:
+    context:
+      txServer: https://echidna.fhir.org/r4   # or /r5 for the R5 profile
+```
+
+**2. Mount it into the matchbox service** by adding a volume to `docker-compose.yml` under the `matchbox` (or `matchbox-r5`) service:
+
+```yaml
+volumes:
+  - matchbox-db:/database
+  - ./application.yaml:/config/application.yaml:ro   # add this line
+```
+
+The enchilada container will still start (it is listed as a healthcheck dependency) but matchbox will route all terminology lookups to the server you configured instead.
+
+**Parameter format difference:** When calling `ConceptMap/$translate` directly against enchilada, use flat `system`/`code`/`targetsystem` parameters. Echidna expects a nested `coding`/`valueCoding` body with `targetSystem` (camelCase). See `matchbox_scripts/enchilada_test.sh` for both formats.
+
 ## Stopping
 
 ```bash
