@@ -12,6 +12,14 @@ fi
 
 DQD_EXTERNAL_PORT=${DQD_EXTERNAL_PORT:-3838}
 
+MATCHBOX_HEALTH="${MATCHBOX_URL:-http://matchbox:8080}/matchboxv3/actuator/health"
+echo "=== Waiting for matchbox at ${MATCHBOX_HEALTH} ==="
+until curl -sf "${MATCHBOX_HEALTH}" | grep -q '"status":"UP"'; do
+    echo "  matchbox not ready, retrying in 10s..."
+    sleep 10
+done
+echo "=== matchbox is ready ==="
+
 cd /etl
 
 echo "=== Running FHIR ${FHIR_VER} -> OMOP ETL (test files) ==="
