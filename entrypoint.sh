@@ -14,7 +14,14 @@ DQD_EXTERNAL_PORT=${DQD_EXTERNAL_PORT:-3838}
 
 MATCHBOX_HEALTH="${MATCHBOX_URL:-http://matchbox:8080}/matchboxv3/actuator/health"
 echo "=== Waiting for matchbox at ${MATCHBOX_HEALTH} ==="
-until curl -sf "${MATCHBOX_HEALTH}" | grep -q '"status":"UP"'; do
+until python3 -c "
+import urllib.request, json, sys
+try:
+    with urllib.request.urlopen('${MATCHBOX_HEALTH}', timeout=5) as r:
+        sys.exit(0 if json.load(r).get('status') == 'UP' else 1)
+except Exception:
+    sys.exit(1)
+" 2>/dev/null; do
     echo "  matchbox not ready, retrying in 10s..."
     sleep 10
 done
