@@ -22,6 +22,7 @@ services:
       - "8080:8080"
     volumes:
       - matchbox-db:/database
+      - ../matchbox_docker/config/application-r4.yaml:/config/application.yaml:ro
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -30,8 +31,8 @@ services:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]
       interval: 10s
       timeout: 3s
-      start_period: 300s
-      retries: 6
+      start_period: 600s
+      retries: 30
 
   matchbox-r5:
     profiles: [r5]
@@ -40,6 +41,7 @@ services:
       - "8082:8080"
     volumes:
       - matchbox-r5-db:/database
+      - ../matchbox_docker/config/application-r5.yaml:/config/application.yaml:ro
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -48,8 +50,8 @@ services:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]
       interval: 10s
       timeout: 3s
-      start_period: 300s
-      retries: 6
+      start_period: 600s
+      retries: 30
 
   dqd:
     profiles: [r4]
