@@ -16,8 +16,8 @@ RUN Rscript -e "remotes::install_github('OHDSI/DataQualityDashboard')"
 
 # Copy ETL scripts, DDL, and fixture directories
 COPY matchbox_scripts/transforms.py matchbox_scripts/load_duckdb.py matchbox_scripts/omop_to_csv.py /etl/
-COPY matchbox_scripts/test_files/ /etl/test_files/
-COPY matchbox_scripts/sample_fixtures/ /etl/sample_fixtures/
+COPY matchbox_scripts/test_files_r4/ /etl/test_files_r4/
+COPY matchbox_scripts/sample_fixtures_r4/ /etl/sample_fixtures_r4/
 COPY matchbox_scripts/test_files_r5/ /etl/test_files_r5/
 COPY matchbox_scripts/sample_fixtures_r5/ /etl/sample_fixtures_r5/
 COPY matchbox_scripts/ddl/ /etl/ddl/
