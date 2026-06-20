@@ -107,10 +107,29 @@ services:
       matchbox-r5:
         condition: service_healthy
 
+  dqd-v100:
+    profiles: [v100]
+    image: croeder/dqd:latest
+    ports:
+      - "3840:3838"
+      - "8090:8088"
+    volumes:
+      - omop-v100-db:/omop
+    environment:
+      - MATCHBOX_URL=http://matchbox-v100:8080
+      - MATCHBOX_R5_URL=http://matchbox-v100:8080
+      - OMOP_DB_PATH=/omop/omop.ddb
+      - FHIR_VERSION=r5
+      - DQD_EXTERNAL_PORT=3840
+    depends_on:
+      matchbox-v100:
+        condition: service_healthy
+
 volumes:
   matchbox-db:
   matchbox-r5-db:
   matchbox-r5-v100-db:
   omop-db:
   omop-r5-db:
+  omop-v100-db:
   enchilada-db:
