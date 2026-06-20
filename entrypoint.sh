@@ -6,8 +6,8 @@ if [ "$FHIR_VER" = "r5" ]; then
     SAMPLE_DIR=sample_fixtures_r5
     TEST_DIR=test_files_r5
 else
-    SAMPLE_DIR=sample_fixtures
-    TEST_DIR=test_files
+    SAMPLE_DIR=sample_fixtures_r4
+    TEST_DIR=test_files_r4
 fi
 
 DQD_EXTERNAL_PORT=${DQD_EXTERNAL_PORT:-3838}
@@ -57,6 +57,7 @@ html = f"""<!DOCTYPE html>
 <ul>
   <li><a href="etl_report_sample.html">ETL Report &mdash; Sample Fixtures</a></li>
   <li><a href="etl_report_test.html">ETL Report &mdash; Test Files</a></li>
+  <li><a href="unit_test_report.html">Unit Test Report</a></li>
   <li><a href="http://localhost:{port}">Data Quality Dashboard</a></li>
 </ul>
 </body></html>"""
