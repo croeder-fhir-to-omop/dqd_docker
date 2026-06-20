@@ -15,13 +15,13 @@ services:
       start_period: 120s
       retries: 12
 
-  matchbox:
-    profiles: [r4]
+  matchbox-r4-1.0.1:
+    profiles: [r4-1.0.1]
     image: croeder/matchbox:r4
     ports:
       - "8080:8080"
     volumes:
-      - matchbox-db:/database
+      - matchbox-r4-1.0.1-db:/database
       - ../matchbox_docker/config/application-r4.yaml:/config/application.yaml:ro
     restart: unless-stopped
     depends_on:
@@ -34,13 +34,13 @@ services:
       start_period: 600s
       retries: 30
 
-  matchbox-r5:
-    profiles: [r5]
+  matchbox-r5-1.0.1:
+    profiles: [r5-1.0.1]
     image: croeder/matchbox:r5
     ports:
       - "8082:8080"
     volumes:
-      - matchbox-r5-db:/database
+      - matchbox-r5-1.0.1-db:/database
       - ../matchbox_docker/config/application-r5.yaml:/config/application.yaml:ro
     restart: unless-stopped
     depends_on:
@@ -53,13 +53,13 @@ services:
       start_period: 600s
       retries: 30
 
-  matchbox-v100:
-    profiles: [v100]
+  matchbox-r5-1.0.0:
+    profiles: [r5-1.0.0]
     image: croeder/matchbox:r5-1.0.0
     ports:
       - "8083:8080"
     volumes:
-      - matchbox-r5-v100-db:/database
+      - matchbox-r5-1.0.0-db:/database
       - ../matchbox_docker/config/application-r5-1.0.0.yaml:/config/application.yaml:ro
     restart: unless-stopped
     depends_on:
@@ -72,64 +72,64 @@ services:
       start_period: 600s
       retries: 30
 
-  dqd:
-    profiles: [r4]
+  dqd-r4-1.0.1:
+    profiles: [r4-1.0.1]
     image: croeder/dqd:latest
     ports:
       - "3838:3838"
       - "8088:8088"
     volumes:
-      - omop-db:/omop
+      - omop-r4-1.0.1-db:/omop
     environment:
-      - MATCHBOX_URL=http://matchbox:8080
+      - MATCHBOX_URL=http://matchbox-r4-1.0.1:8080
       - OMOP_DB_PATH=/omop/omop.ddb
       - FHIR_VERSION=r4
       - DQD_EXTERNAL_PORT=3838
     depends_on:
-      matchbox:
+      matchbox-r4-1.0.1:
         condition: service_healthy
 
-  dqd-r5:
-    profiles: [r5]
+  dqd-r5-1.0.1:
+    profiles: [r5-1.0.1]
     image: croeder/dqd:latest
     ports:
       - "3839:3838"
       - "8089:8088"
     volumes:
-      - omop-r5-db:/omop
+      - omop-r5-1.0.1-db:/omop
     environment:
-      - MATCHBOX_URL=http://matchbox-r5:8080
-      - MATCHBOX_R5_URL=http://matchbox-r5:8080
+      - MATCHBOX_URL=http://matchbox-r5-1.0.1:8080
+      - MATCHBOX_R5_URL=http://matchbox-r5-1.0.1:8080
       - OMOP_DB_PATH=/omop/omop.ddb
       - FHIR_VERSION=r5
       - DQD_EXTERNAL_PORT=3839
     depends_on:
-      matchbox-r5:
+      matchbox-r5-1.0.1:
         condition: service_healthy
 
-  dqd-v100:
-    profiles: [v100]
+  dqd-r5-1.0.0:
+    profiles: [r5-1.0.0]
     image: croeder/dqd:latest
     ports:
       - "3840:3838"
       - "8090:8088"
     volumes:
-      - omop-v100-db:/omop
+      - omop-r5-1.0.0-db:/omop
     environment:
-      - MATCHBOX_URL=http://matchbox-v100:8080
-      - MATCHBOX_R5_URL=http://matchbox-v100:8080
+      - MATCHBOX_URL=http://matchbox-r5-1.0.0:8080
+      - MATCHBOX_R5_URL=http://matchbox-r5-1.0.0:8080
       - OMOP_DB_PATH=/omop/omop.ddb
       - FHIR_VERSION=r5
       - DQD_EXTERNAL_PORT=3840
     depends_on:
-      matchbox-v100:
+      matchbox-r5-1.0.0:
         condition: service_healthy
 
 volumes:
-  matchbox-db:
-  matchbox-r5-db:
-  matchbox-r5-v100-db:
-  omop-db:
-  omop-r5-db:
-  omop-v100-db:
+  matchbox-r4-1.0.1-db:
+  matchbox-r5-1.0.1-db:
+  matchbox-r5-1.0.0-db:
+  omop-r4-1.0.1-db:
+  omop-r5-1.0.1-db:
+  omop-r5-1.0.0-db:
   enchilada-db:
