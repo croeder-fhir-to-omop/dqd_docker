@@ -6,7 +6,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
  && R CMD javareconf
 
-RUN pip3 install --no-cache-dir --break-system-packages requests duckdb
+RUN pip3 install --no-cache-dir --break-system-packages requests duckdb pytest pytest-html
 
 # R packages — use PPM for pre-built Linux binaries, fall back to CRAN for missing
 RUN Rscript -e " \
@@ -21,6 +21,7 @@ COPY matchbox_scripts/sample_fixtures_r4/ /etl/sample_fixtures_r4/
 COPY matchbox_scripts/test_files_r5/ /etl/test_files_r5/
 COPY matchbox_scripts/sample_fixtures_r5/ /etl/sample_fixtures_r5/
 COPY matchbox_scripts/ddl/ /etl/ddl/
+COPY matchbox_scripts/tests/ /etl/tests/
 
 # Copy DQD runner and Shiny launcher
 COPY dqd_docker/run_dqd.R /app/run_dqd.R

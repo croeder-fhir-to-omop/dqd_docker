@@ -40,6 +40,11 @@ mv /omop/etl_report.html /omop/etl_report_sample.html
 echo "=== Running Data Quality Dashboard checks ==="
 Rscript /app/run_dqd.R
 
+echo "=== Running unit tests ==="
+MATCHBOX_URL="${MATCHBOX_URL:-http://matchbox:8080}" \
+  python3 -m pytest /etl/tests/test_r5_fml_transforms.py -v \
+    --html=/omop/unit_test_report.html --self-contained-html || true
+
 echo "=== Copying fixtures for ETL report links ==="
 mkdir -p /omop/fixtures
 cp /etl/${TEST_DIR}/*.json /omop/fixtures/ 2>/dev/null || true
