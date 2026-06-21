@@ -17,9 +17,8 @@ Part of the [croeder-fhir-to-omop](https://github.com/croeder-fhir-to-omop) FHIR
 | Path | Description |
 |---|---|
 | `Dockerfile` | Installs Python, R, DuckDB, and `DataQualityDashboard`; bakes in ETL scripts and fixtures from `matchbox_scripts` |
-| `docker-compose.yml` | Starts matchbox + the ETL/DQD container using published images — no repo clones required |
-| `docker-compose.dev.yml` | Overlay for `matchbox_scripts` development: rebuilds locally from source |
-| `docker-compose.matchbox-dev.yml` | Overlay for local OMOP IG development: mounts `igs/` and `config/` from a sibling `matchbox_docker` clone |
+| `docker-compose.yml` | Starts enchilada + matchbox + the ETL/DQD container using published images — no repo clones required |
+| `docker-compose.profiles.yml` | Multi-stack compose for R4/R5 × 1.0.0/1.0.1 combinations (advanced) |
 | `docker-compose.build.yml` | Builds and tags the image for publishing |
 | `entrypoint.sh` | Runs ETL → DQD checks → starts both HTTP servers |
 | `run_dqd.R` | Executes DQD checks against the DuckDB OMOP database; dynamically skips empty tables |
@@ -31,42 +30,58 @@ The only files you need locally are the two large OMOP vocabulary files from [At
 - `CONCEPT.csv`
 - `CONCEPT_RELATIONSHIP.csv`
 
-Place them in a working directory alongside the compose file, then:
+Place them in a working directory, then pull and start the stack in one command:
 
-**Linux / macOS / Windows (PowerShell)**
+```bash
+curl -fsSL https://raw.githubusercontent.com/croeder-fhir-to-omop/dqd_docker/main/docker-compose.yml | docker compose -f - up
+```
+
+Or download the compose file first if you want to edit it:
 
 ```bash
 curl -O https://raw.githubusercontent.com/croeder-fhir-to-omop/dqd_docker/main/docker-compose.yml
+docker compose up
 ```
 
-**FHIR R4 (default)**
-
-```bash
-docker compose --profile r4 up
-```
-
-**FHIR R5**
-
-```bash
-docker compose --profile r5 up
-```
-
-If your vocabulary files are not in the current directory, set environment variables to point to them:
+If your vocabulary files are not in the current directory, set environment variables:
 
 ```bash
 CONCEPT_CSV=/path/to/CONCEPT.csv \
 CONCEPT_RELATIONSHIP_CSV=/path/to/CONCEPT_RELATIONSHIP.csv \
-docker compose --profile r4 up
+docker compose up
 ```
 
-| Profile | URL | Description |
-|---|---|---|
-| r4 | http://localhost:3838 | OHDSI Data Quality Dashboard (R4) |
-| r4 | http://localhost:8088/etl_report.html | ETL report — per-fixture status, StructureMap used, root cause of any failures |
-| r5 | http://localhost:3839 | OHDSI Data Quality Dashboard (R5) |
-| r5 | http://localhost:8089/etl_report.html | ETL report (R5) |
+| URL | Description |
+|---|---|
+| http://localhost:3838 | OHDSI Data Quality Dashboard |
+| http://localhost:8088 | ETL and unit test reports |
 
-On first run matchbox loads the OMOP IG (~1 min). Subsequent runs use the cached volume.
+On first run, enchilada loads the vocabulary CSVs (~1–2 min) and matchbox loads the OMOP IG (~1 min). Both are cached in Docker volumes and skipped on subsequent starts.
+
+## Terminology server
+
+By default, matchbox uses **enchilada** — the local OMOP-backed terminology container bundled in `docker-compose.yml`. The image defaults to [echidna.fhir.org](https://echidna.fhir.org) (public), and the compose file overrides it to enchilada via the `MATCHBOX_FHIR_CONTEXT_TXSERVER` environment variable.
+
+To switch to echidna instead, override the variable:
+
+```bash
+MATCHBOX_FHIR_CONTEXT_TXSERVER=https://echidna.fhir.org/r4 docker compose up
+```
+
+Or set it in a `.env` file alongside your compose file:
+
+```
+MATCHBOX_FHIR_CONTEXT_TXSERVER=https://echidna.fhir.org/r4
+```
+
+When using echidna, enchilada still starts (it is a healthcheck dependency) but matchbox routes all terminology lookups to echidna instead.
+
+## Stopping
+
+```bash
+docker compose down      # keep volumes (fast restart — vocabulary cache preserved)
+docker compose down -v   # also remove volumes (fresh start, full CSV reload)
+```
 
 ## Developing matchbox_scripts locally
 
@@ -80,45 +95,13 @@ The `--build` flag rebuilds the `dqd` image so that your local `matchbox_scripts
 
 ## Developing the OMOP IG locally
 
-Clone `matchbox_docker` alongside this repo, build your local IG version into `matchbox_docker/igs/`, and update `matchbox_docker/config/application.yaml` with the new version (see the [matchbox_docker README](https://github.com/croeder-fhir-to-omop/matchbox_docker) for the full workflow). Then run with the matchbox dev overlay:
+Clone `matchbox_docker` alongside this repo, build your local IG version into `matchbox_docker/igs/`, and run with the matchbox dev overlay:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.matchbox-dev.yml up
 ```
 
 No image rebuild is required — the overlay mounts `../matchbox_docker/igs` and `../matchbox_docker/config` into the matchbox container at runtime.
-
-## Using a different terminology server (e.g. echidna)
-
-By default, matchbox uses **enchilada** — a local OMOP-backed terminology container included in `docker-compose.yml`. You can swap it for any FHIR-compatible terminology server such as [echidna.fhir.org](https://echidna.fhir.org).
-
-**1. Create a config override file** in your working directory, e.g. `application.yaml`:
-
-```yaml
-matchbox:
-  fhir:
-    context:
-      txServer: https://echidna.fhir.org/r4   # or /r5 for the R5 profile
-```
-
-**2. Mount it into the matchbox service** by adding a volume to `docker-compose.yml` under the `matchbox` (or `matchbox-r5`) service:
-
-```yaml
-volumes:
-  - matchbox-db:/database
-  - ./application.yaml:/config/application.yaml:ro   # add this line
-```
-
-The enchilada container will still start (it is listed as a healthcheck dependency) but matchbox will route all terminology lookups to the server you configured instead.
-
-**Parameter format difference:** When calling `ConceptMap/$translate` directly against enchilada, use flat `system`/`code`/`targetsystem` parameters. Echidna expects a nested `coding`/`valueCoding` body with `targetSystem` (camelCase). See `matchbox_scripts/enchilada_test.sh` for both formats.
-
-## Stopping
-
-```bash
-docker compose down      # keep data volumes
-docker compose down -v   # also remove volumes (fresh start)
-```
 
 ## Building and publishing the image
 
