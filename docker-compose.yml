@@ -1,11 +1,31 @@
 services:
+  enchilada:
+    image: croeder/enchilada:latest
+    ports:
+      - "8081:8081"
+    volumes:
+      - enchilada-db:/db
+      - ${CONCEPT_CSV:-./CONCEPT.csv}:/data/CONCEPT.csv:ro
+      - ${CONCEPT_RELATIONSHIP_CSV:-./CONCEPT_RELATIONSHIP.csv}:/data/CONCEPT_RELATIONSHIP.csv:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request, ssl; ctx=ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE; urllib.request.urlopen('https://localhost:8081/r4/metadata', context=ctx)"]
+      interval: 10s
+      timeout: 5s
+      start_period: 120s
+      retries: 12
+
   matchbox:
     image: croeder/matchbox:latest
     ports:
       - "8080:8080"
     volumes:
       - matchbox-db:/database
+      - ../matchbox_docker/config/application-r5-1.0.0.yaml:/config/application.yaml:ro
     restart: unless-stopped
+    depends_on:
+      enchilada:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]
       interval: 10s
@@ -32,5 +52,6 @@ services:
         condition: service_healthy
 
 volumes:
+  enchilada-db:
   matchbox-db:
   omop-db:
