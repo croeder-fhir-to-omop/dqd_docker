@@ -48,6 +48,7 @@ services:
       - FHIR_VERSION=r5
       - OMOP_IG_VERSION=1.0.0
       - DQD_EXTERNAL_PORT=3838
+      - TRANSFORM_SLEEP=${TRANSFORM_SLEEP:-0}
     depends_on:
       matchbox:
         condition: service_healthy
