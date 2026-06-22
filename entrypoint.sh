@@ -42,6 +42,7 @@ Rscript /app/run_dqd.R
 
 echo "=== Running unit tests ==="
 MATCHBOX_URL="${MATCHBOX_URL:-http://matchbox:8080}" \
+  TRANSFORM_SLEEP="${TRANSFORM_SLEEP:-1}" \
   python3 -m pytest /etl/tests/test_r5_fml_transforms.py -v \
     --html=/omop/unit_test_report.html --self-contained-html || true
 
