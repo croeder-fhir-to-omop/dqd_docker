@@ -22,7 +22,7 @@ services:
     volumes:
       - matchbox-db:/database
     environment:
-      - MATCHBOX_FHIR_CONTEXT_TXSERVER=https://enchilada:8081/r4
+      - MATCHBOX_FHIR_CONTEXT_TXSERVER=${MATCHBOX_FHIR_CONTEXT_TXSERVER:-https://enchilada:8081/r4}
     restart: unless-stopped
     depends_on:
       enchilada:
