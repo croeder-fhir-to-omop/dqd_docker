@@ -113,3 +113,9 @@ docker compose -f docker-compose.build.yml push
 ```
 
 See the [organisation README](https://github.com/croeder-fhir-to-omop) for full usage and fixture/engine extension guidance.
+
+## License
+
+Licensed under the [Apache License 2.0](./LICENSE). Copyright 2026 Christophe Roeder.
+
+See the [organization README](https://github.com/croeder-fhir-to-omop) for full pipeline documentation and vocabulary licensing notices ([NOTICES.md](https://github.com/croeder-fhir-to-omop/.github/blob/main/profile/NOTICES.md)).
