@@ -78,6 +78,8 @@ MATCHBOX_FHIR_CONTEXT_TXSERVER=https://echidna.fhir.org/r4
 
 When using echidna, enchilada still starts (it is a healthcheck dependency) but matchbox routes all terminology lookups to echidna instead.
 
+> **Licensing:** echidna's [terms of use](https://echidna.fhir.org/terms/) restrict access to personal use and prohibit commercial use or redistribution of the OMOP vocabulary data it provides. SNOMED CT license requirements still apply for users outside SNOMED International member countries. See [NOTICES.md](https://github.com/croeder-fhir-to-omop/.github/blob/main/profile/NOTICES.md) for details.
+
 ## Stopping
 
 ```bash
