@@ -9,4 +9,4 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-    image: croeder/dqd:latest
+    image: croeder/dqd:${DQD_TAG:-latest}

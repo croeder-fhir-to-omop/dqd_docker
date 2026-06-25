@@ -36,7 +36,7 @@ services:
 
   dqd-r4-1.0.1:
     profiles: [r4-1.0.1]
-    image: croeder/dqd:latest
+    image: ${DQD_IMAGE:-croeder/dqd:latest}
     ports:
       - "3838:3838"
       - "8088:8088"
@@ -72,7 +72,7 @@ services:
 
   dqd-r5-1.0.1:
     profiles: [r5-1.0.1]
-    image: croeder/dqd:latest
+    image: ${DQD_IMAGE:-croeder/dqd:latest}
     ports:
       - "3839:3838"
       - "8089:8088"
@@ -109,7 +109,7 @@ services:
 
   dqd-r5-1.0.0:
     profiles: [r5-1.0.0]
-    image: croeder/dqd:latest
+    image: ${DQD_IMAGE:-croeder/dqd:latest}
     ports:
       - "3840:3838"
       - "8090:8088"

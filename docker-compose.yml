@@ -35,7 +35,7 @@ services:
       retries: 30
 
   dqd:
-    image: croeder/dqd:latest
+    image: ${DQD_IMAGE:-croeder/dqd:latest}
     ports:
       - "3838:3838"
       - "8088:8088"
