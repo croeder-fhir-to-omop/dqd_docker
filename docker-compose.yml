@@ -1,3 +1,5 @@
+name: dqd_docker
+
 services:
   enchilada:
     image: croeder/enchilada:latest
