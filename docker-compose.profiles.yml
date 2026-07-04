@@ -51,6 +51,42 @@ services:
       matchbox-r4-1.0.1:
         condition: service_healthy
 
+  matchbox-r4-1.0.0:
+    profiles: [r4-1.0.0]
+    image: croeder/matchbox:r4-1.0.0
+    ports:
+      - "8084:8080"
+    volumes:
+      - matchbox-r4-1.0.0-db:/database
+      - ../matchbox_docker/config/application-r4-1.0.0.yaml:/config/application.yaml:ro
+    restart: unless-stopped
+    depends_on:
+      enchilada:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/matchboxv3/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      start_period: 600s
+      retries: 30
+
+  dqd-r4-1.0.0:
+    profiles: [r4-1.0.0]
+    image: croeder/dqd:latest
+    ports:
+      - "3841:3838"
+      - "8091:8088"
+    volumes:
+      - omop-r4-1.0.0-db:/omop
+    environment:
+      - MATCHBOX_URL=http://matchbox-r4-1.0.0:8080
+      - OMOP_DB_PATH=/omop/omop.ddb
+      - FHIR_VERSION=r4
+      - DQD_EXTERNAL_PORT=3841
+    depends_on:
+      matchbox-r4-1.0.0:
+        condition: service_healthy
+
   matchbox-r5-1.0.1:
     profiles: [r5-1.0.1]
     image: croeder/matchbox:r5
@@ -127,9 +163,11 @@ services:
 
 volumes:
   matchbox-r4-1.0.1-db:
+  matchbox-r4-1.0.0-db:
   matchbox-r5-1.0.1-db:
   matchbox-r5-1.0.0-db:
   omop-r4-1.0.1-db:
+  omop-r4-1.0.0-db:
   omop-r5-1.0.1-db:
   omop-r5-1.0.0-db:
   enchilada-db:
