@@ -5,9 +5,11 @@ FHIR_VER=${FHIR_VERSION:-r4}
 if [ "$FHIR_VER" = "r5" ]; then
     SAMPLE_DIR=sample_fixtures_r5
     TEST_DIR=test_files_r5
+    UNIT_TEST_FILE=test_r5_fml_transforms.py
 else
     SAMPLE_DIR=sample_fixtures_r4
     TEST_DIR=test_files_r4
+    UNIT_TEST_FILE=test_r4_fml_transforms.py
 fi
 
 DQD_EXTERNAL_PORT=${DQD_EXTERNAL_PORT:-3838}
@@ -40,11 +42,21 @@ mv /omop/etl_report.html /omop/etl_report_sample.html
 echo "=== Running Data Quality Dashboard checks ==="
 Rscript /app/run_dqd.R
 
-echo "=== Running unit tests ==="
-MATCHBOX_URL="${MATCHBOX_URL:-http://matchbox:8080}" \
-  TRANSFORM_SLEEP="${TRANSFORM_SLEEP:-1}" \
-  python3 -m pytest /etl/tests/test_r5_fml_transforms.py -v \
-    --html=/omop/unit_test_report.html --self-contained-html || true
+echo "=== Running unit tests (${UNIT_TEST_FILE}) ==="
+if [ -f "/etl/tests/${UNIT_TEST_FILE}" ]; then
+    MATCHBOX_URL="${MATCHBOX_URL:-http://matchbox:8080}" \
+      TRANSFORM_SLEEP="${TRANSFORM_SLEEP:-1}" \
+      python3 -m pytest /etl/tests/${UNIT_TEST_FILE} -v \
+        --html=/omop/unit_test_report.html --self-contained-html || true
+else
+    echo "No unit test suite for FHIR ${FHIR_VER} yet (${UNIT_TEST_FILE} does not exist) -- skipping. See matchbox_scripts#8."
+    cat > /omop/unit_test_report.html <<HTMLEOF
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Unit Test Report</title></head>
+<body><h1>No unit test suite for FHIR ${FHIR_VER} yet</h1>
+<p>See <a href="https://github.com/croeder-fhir-to-omop/matchbox_scripts/issues/8">matchbox_scripts#8</a>.</p>
+</body></html>
+HTMLEOF
+fi
 
 echo "=== Copying fixtures for ETL report links ==="
 mkdir -p /omop/fixtures
