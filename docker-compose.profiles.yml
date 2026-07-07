@@ -23,6 +23,8 @@ services:
     volumes:
       - matchbox-r4-1.0.1-db:/database
       - ../matchbox_docker/config/application-r4.yaml:/config/application.yaml:ro
+    environment:
+      - MATCHBOX_FHIR_CONTEXT_TXSERVER=${MATCHBOX_FHIR_CONTEXT_TXSERVER:-https://enchilada:8081/r4}
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -59,6 +61,8 @@ services:
     volumes:
       - matchbox-r4-1.0.0-db:/database
       - ../matchbox_docker/config/application-r4-1.0.0.yaml:/config/application.yaml:ro
+    environment:
+      - MATCHBOX_FHIR_CONTEXT_TXSERVER=${MATCHBOX_FHIR_CONTEXT_TXSERVER:-https://enchilada:8081/r4}
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -95,6 +99,8 @@ services:
     volumes:
       - matchbox-r5-1.0.1-db:/database
       - ../matchbox_docker/config/application-r5-1.0.1.yaml:/config/application.yaml:ro
+    environment:
+      - MATCHBOX_FHIR_CONTEXT_TXSERVER=${MATCHBOX_FHIR_CONTEXT_TXSERVER:-https://enchilada:8081/r4}
     restart: unless-stopped
     depends_on:
       enchilada:
@@ -132,6 +138,8 @@ services:
     volumes:
       - matchbox-r5-1.0.0-db:/database
       - ../matchbox_docker/config/application-r5-1.0.0.yaml:/config/application.yaml:ro
+    environment:
+      - MATCHBOX_FHIR_CONTEXT_TXSERVER=${MATCHBOX_FHIR_CONTEXT_TXSERVER:-https://enchilada:8081/r4}
     restart: unless-stopped
     depends_on:
       enchilada:
