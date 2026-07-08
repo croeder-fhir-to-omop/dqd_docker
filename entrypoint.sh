@@ -83,6 +83,7 @@ html = f"""<!DOCTYPE html>
   <li><a href="etl_report_sample.html">ETL Report &mdash; Sample Fixtures</a></li>
   <li><a href="etl_report_test.html">ETL Report &mdash; Test Files</a></li>
   <li><a href="unit_test_report.html">Unit Test Report</a></li>
+  <li><a href="release_conformance_report.html">Release Conformance Report</a></li>
   <li><a href="http://localhost:{port}">Data Quality Dashboard</a></li>
 </ul>
 </body></html>"""
